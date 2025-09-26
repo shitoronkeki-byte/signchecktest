@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>啓示録記述式クイズ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap');
+
+:root{
+  --bg: linear-gradient(135deg, #a8e6cf 0%, #dcedc8 50%, #87ceeb 100%);
+  --card: rgba(255, 255, 255, 0.9);
+  --ink: #333;
+  --brand1: #2196f3;
+  --brand2: #1976d2;
+  --accent: #4caf50;
+  --danger: #f44336;
+  --ring: #e3f2fd;
+  --shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+  --radius: 25px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  overflow-x: hidden;
+  background: var(--bg);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+  color: var(--ink);
+  font-family: 'Zen Maru Gothic', 'Klee One', '游ゴシック', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+  min-height: 100vh;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: sparkle 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+h1 {
+  display: none;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+  color: #6b7a90;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.progress {
+  width: 100%;
+  height: 8px;
+  background: var(--ring);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--brand1), var(--brand2));
+  transition: width 0.3s ease;
+}
+
+.qbox {
+  margin-top: 10px;
+  font-size: 18px;
+  line-height: 1.7;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 20px;
+  border-radius: 20px;
+  border: 3px solid var(--brand1);
+  box-shadow: 0 8px 16px rgba(33, 150, 243, 0.2);
+  position: relative;
+  font-weight: 500;
+}
+
+.qbox::before {
+  content: '●';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.opts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn {
+  width: 100%;
+  border: 3px solid var(--brand1);
+  background: #fff;
+  border-radius: 15px;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.btn:focus {
+  outline: none;
+  border-color: var(--brand2);
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.2), 0 4px 12px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: scale(0.995);
+}
+
+.btn.correct {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+}
+
+.btn.wrong {
+  border-color: var(--danger);
+  box-shadow: inset 0 0 0 2px var(--danger);
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+}
+
+.ctrls {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.primary {
+  flex: 1;
+  border: 0;
+  border-radius: 20px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand1), var(--brand2));
+  box-shadow: 0 6px 15px rgba(33, 150, 243, 0.4);
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(33, 150, 243, 0.5);
+}
+
+.ghost {
+  border: 2px solid var(--ring);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 20px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.ghost:hover {
+  background: var(--ring);
+  transform: translateY(-1px);
+}
+
+.result {
+  margin-top: 14px;
+  font-size: 15px;
+  color: #6b7a90;
+  font-weight: 500;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.hide {
+  display: none !important;
+}
+
+.blank-highlight {
+  background: rgba(33, 150, 243, 0.1);
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--brand2);
+  border-bottom: 3px dashed var(--brand1);
+}
+
+.loading {
+  text-align: center;
+  color: #6b7a90;
+  font-style: italic;
+}
+
+.error {
+  text-align: center;
+  color: var(--danger);
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="meta">
+        <div id="counter">読み込み中...</div>
+      </div>
+      <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+
+      <div class="qbox" id="qtext">
+        <div class="loading">問題を読み込んでいます...</div>
+      </div>
+
+      <div class="opts" id="opts"></div>
+
+      <div class="ctrls">
+        <button id="next" class="primary hide">次へ</button>
+        <button id="retry" class="btn ghost hide">やり直す</button>
+      </div>
+
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const qs = new URLSearchParams(location.search);
+  const countParam = Math.max(1, Number(qs.get('n') || 10)); // デフォルト10問
+
+  let all = [];
+  let picks = [];
+  let idx = 0;
+  let answered = false;
+  let score = 0;
+
+  const qtext = document.getElementById('qtext');
+  const optsEl = document.getElementById('opts');
+  const counter = document.getElementById('counter');
+  const bar = document.getElementById('bar');
+  const nextBtn = document.getElementById('next');
+  const retryBtn = document.getElementById('retry');
+  const resultEl = document.getElementById('result');
+
+  // JSONファイルから問題を読み込み
+  loadQuestions();
+
+  async function loadQuestions() {
+    try {
+      const response = await fetch('index.json', { 
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('問題データが空または無効な形式です');
+      }
+      
+      all = data;
+      start();
+      
+    } catch (error) {
+      console.error('問題読み込みエラー:', error);
+      qtext.innerHTML = `
+        <div class="error">
+          <div>問題データの読み込みに失敗しました</div>
+          <div style="font-size: 13px; margin-top: 8px;">
+            ${error.message || 'kindchecktest.json ファイルを確認してください'}
+          </div>
+        </div>
+      `;
+      nextBtn.classList.add('hide');
+      counter.textContent = 'エラー';
+    }
+  }
+
+  function start(){
+    idx = 0; 
+    score = 0;
+    picks = shuffle([...all]).slice(0, Math.min(countParam, all.length));
+    setProgress(0);
+    nextBtn.classList.remove('hide');
+    render();
+  }
+
+  function render(){
+    answered = false;
+    resultEl.textContent = '';
+    resultEl.style.background = 'rgba(255, 255, 255, 0.7)';
+    retryBtn.classList.add('hide');
+
+    const q = picks[idx];
+    counter.textContent = `${idx+1}/${picks.length}`;
+    setProgress(idx / picks.length);
+    
+    // 質問文を表示（空欄を視覚的にハイライト）
+    const questionWithHighlight = (q.question ?? '').replace(/（[^）]*）/g, 
+      '<span class="blank-highlight">$&</span>');
+    qtext.innerHTML = questionWithHighlight;
+
+    // 空欄数（全角かっこ「（　　）」の個数）をカウント
+    const blanks = countBlanks(q.question);
+
+    // 入力欄生成
+    optsEl.innerHTML = '';
+    const inputs = [];
+
+    if (blanks > 0) {
+      for (let i = 0; i < blanks; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = `空欄${i+1}（完全一致）`;
+        input.className = 'btn';
+        input.style.textAlign = 'left';
+        inputs.push(input);
+        optsEl.appendChild(input);
+        
+        // 全ての入力欄でEnterキー対応
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            okButton.click();
+          }
+        });
+      }
+    } else {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = '解答を入力（完全一致）';
+      input.className = 'btn';
+      input.style.textAlign = 'left';
+      inputs.push(input);
+      optsEl.appendChild(input);
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          okButton.click();
+        }
+      });
+    }
+
+    const okButton = document.createElement('button');
+    okButton.className = 'primary';
+    okButton.textContent = '解答する';
+    okButton.style.marginTop = '12px';
+    optsEl.appendChild(okButton);
+
+    if (inputs.length) {
+      setTimeout(() => inputs[0].focus(), 100);
+    }
+
+    okButton.onclick = () => onAnswer(inputs, q, okButton);
+
+    nextBtn.textContent = (idx === picks.length - 1) ? '結果を見る' : '次へ';
+  }
+
+  function countBlanks(text){
+    if (!text) return 0;
+    const m = String(text).match(/（[^）]*）/gu);
+    return m ? m.length : 0;
+  }
+
+  // 完全一致（前後の空白のみ無視）。複数空欄はすべて合っていれば○。
+  function onAnswer(inputs, q, okButton){
+    if (answered) return;
+
+    const userAnswers = inputs.map(el => (el.value ?? '').replace(/^\s+|\s+$/g, ''));
+    if (userAnswers.some(v => v.length === 0)) {
+      resultEl.textContent = 'すべての空欄を入力してください';
+      resultEl.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
+      return;
+    }
+
+    const expectedRaw = q.answers ?? q.answer ?? '';
+    const expected = Array.isArray(expectedRaw) ? expectedRaw : [String(expectedRaw)];
+
+    const blanks = countBlanks(q.question);
+    const need = blanks > 0 ? blanks : 1;
+
+    const expects = expected.slice(0, need);
+    while (expects.length < need) expects.push('');
+
+    const trim = s => String(s).replace(/^\s+|\s+$/g, '');
+    const results = userAnswers.map((ans, i) => ans === trim(expects[i]));
+
+    answered = true;
+    
+    // 入力欄の色を変更
+    inputs.forEach((input, i) => {
+      if (results[i]) {
+        input.classList.add('correct');
+      } else {
+        input.classList.add('wrong');
+      }
+    });
+    
+    if (results.every(Boolean)) {
+      score++;
+      resultEl.textContent = '✓ 正解です！';
+      resultEl.style.background = 'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)';
+      resultEl.style.color = '#1b5e20';
+    } else {
+      const detail = results.map(ok => ok ? '○' : '×').join(' ');
+      resultEl.textContent = `× 不正解（${detail}）　正解：${expects.join(' ／ ')}`;
+      resultEl.style.background = 'linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%)';
+      resultEl.style.color = '#b71c1c';
+    }
+
+    if (idx === picks.length - 1) retryBtn.classList.remove('hide');
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (idx < picks.length - 1) {
+      idx++;
+      render();
+    } else {
+      setProgress(1);
+      qtext.innerHTML = '<div style="text-align: center; font-size: 20px; color: var(--brand2);">おつかれさまでした！</div>';
+      optsEl.innerHTML = '';
+      counter.textContent = `${picks.length}/${picks.length}`;
+      const percentage = Math.round((score / picks.length) * 100);
+      resultEl.textContent = `スコア：${score} / ${picks.length} (${percentage}%)`;
+      resultEl.style.background = score === picks.length ? 
+        'linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%)' : 
+        'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
+      resultEl.style.color = score === picks.length ? '#1b5e20' : '#856404';
+      nextBtn.textContent = 'もう一度';
+      nextBtn.onclick = () => location.reload();
+      retryBtn.classList.remove('hide');
+    }
+  });
+
+  retryBtn.addEventListener('click', start);
+
+  function setProgress(ratio){
+    bar.style.width = `${Math.round(ratio*100)}%`;
+  }
+  
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j = (Math.random()*(i+1))|0;
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+})();
+</script>
+</body>
+
+</html>
