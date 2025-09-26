@@ -317,9 +317,7 @@ h1 {
     try {
       const response = await fetch('signchecktest.json', { 
         cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
       
       if (!response.ok) {
@@ -526,3 +524,4 @@ h1 {
 
 
 </html>
+
